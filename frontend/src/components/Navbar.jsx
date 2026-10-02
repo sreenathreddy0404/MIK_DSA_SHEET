@@ -1,13 +1,15 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Code2 } from "lucide-react";
 import { useAuth } from "@/lib/auth.jsx";
 import { useTheme } from "@/lib/theme.jsx";
 
-const navLinkClass =
-  "rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-hover hover:text-foreground";
+const navLinkBase =
+  "relative rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200";
 
 function navClass({ isActive }) {
-  return isActive ? `${navLinkClass} text-foreground` : navLinkClass;
+  return isActive
+    ? `${navLinkBase} bg-primary text-primary-foreground shadow-sm`
+    : `${navLinkBase} text-muted-foreground hover:text-foreground hover:bg-hover`;
 }
 
 export function Navbar() {
@@ -21,13 +23,38 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container-sheet flex h-14 items-center justify-between gap-3">
-        <Link to="/" className="text-sm font-semibold tracking-tight text-foreground">
-          DSA Sheet
+    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+      <div className="container-sheet flex h-14 items-center justify-between gap-4">
+        {/* ── Brand ── */}
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 group transition-opacity hover:opacity-90"
+        >
+          <span
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-white text-sm font-bold select-none shadow-md transition-transform duration-200 group-hover:scale-110"
+            style={{
+              background: "linear-gradient(135deg, oklch(0.50 0.22 290), oklch(0.52 0.18 225))",
+            }}
+          >
+            <Code2 className="h-4 w-4" />
+          </span>
+          <span className="text-sm font-bold tracking-tight">
+            <span
+              style={{
+                background: "linear-gradient(90deg, oklch(0.50 0.22 290), oklch(0.52 0.18 225))",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              DSA
+            </span>
+            <span className="text-foreground"> Sheet</span>
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-0.5">
+        {/* ── Nav links ── */}
+        <nav className="flex items-center gap-1">
           <NavLink to="/" end className={navClass}>
             Sheet
           </NavLink>
@@ -40,26 +67,44 @@ export function Navbar() {
             </NavLink>
           )}
 
+          {/* Theme toggle */}
           <button
             type="button"
             onClick={toggle}
             aria-label="Toggle theme"
-            className="ml-1 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-hover hover:text-foreground"
+            className="ml-1 rounded-lg p-1.5 text-muted-foreground transition-all duration-200 hover:bg-hover hover:text-foreground hover:scale-110"
           >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4 text-warning" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
           </button>
 
+          {/* User area */}
           {user ? (
             <div className="ml-1 flex items-center gap-2">
-              <span className="hidden max-w-[10rem] truncate text-xs text-muted-foreground sm:inline">
-                {user.username || user.name || email}
+              <span
+                className="hidden h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white sm:flex shadow-sm"
+                style={{
+                  background: "linear-gradient(135deg, oklch(0.50 0.22 290), oklch(0.52 0.18 225))",
+                }}
+              >
+                {(user.username || user.name || email || "U")[0].toUpperCase()}
               </span>
-              <button type="button" onClick={handleSignOut} className={navLinkClass}>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-destructive/10 hover:text-destructive"
+              >
                 Logout
               </button>
             </div>
           ) : (
-            <NavLink to="/auth" className={navClass}>
+            <NavLink
+              to="/auth"
+              className="ml-1 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-sm transition-all duration-200 hover:opacity-90 hover:shadow-md hover:-translate-y-px"
+            >
               Sign in
             </NavLink>
           )}

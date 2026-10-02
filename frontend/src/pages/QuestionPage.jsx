@@ -137,7 +137,7 @@ export default function QuestionPage() {
           onClick={() => toggle.mutate()}
           className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors ${
             completed
-              ? "border-foreground bg-foreground text-background"
+              ? "border-primary bg-primary text-primary-foreground"
               : "border-border text-foreground hover:bg-hover"
           }`}
         >

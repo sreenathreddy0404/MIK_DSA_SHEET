@@ -1,49 +1,77 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Check, ExternalLink, Github, BookOpen, Play, X } from "lucide-react";
 import { extractYouTubeId } from "@/lib/sheet.js";
 import { YouTubePlayer } from "@/components/YouTubePlayer.jsx";
 
-const linkClass =
-  "rounded px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-hover hover:text-foreground";
-
-export function QuestionRow({ question, index, completed, onToggle }) {
+export function QuestionRow({ question, index, completed, onToggle, accentColor }) {
   const [showVideo, setShowVideo] = useState(false);
   const videoId = question.youtube_video_id ?? extractYouTubeId(question.youtube_url);
 
+  const dot = accentColor?.dot ?? "oklch(0.50 0.22 290)";
+  const bg = accentColor?.bg ?? "oklch(0.93 0.06 290)";
+  const border = accentColor?.border ?? "oklch(0.80 0.12 290)";
+
   return (
-    <div className="border-t border-border first:border-t-0">
-      <div className="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-hover sm:px-4">
+    <div className="border-t border-border/60 first:border-t-0 transition-colors">
+      <div
+        className="flex items-center gap-3 px-4 py-2.5 transition-all duration-150 hover:bg-hover sm:px-5"
+        style={completed ? { background: bg + "28" } : {}}
+      >
+        {/* Completion toggle */}
         <button
           type="button"
           onClick={onToggle}
           aria-label={completed ? "Mark as not completed" : "Mark as completed"}
           aria-pressed={completed}
-          className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition-colors ${
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 hover:scale-110"
+          style={
             completed
-              ? "border-foreground bg-foreground text-background"
-              : "border-border text-transparent hover:border-muted-foreground"
-          }`}
+              ? { background: dot, borderColor: dot, color: "white" }
+              : { borderColor: "var(--color-border)", color: "transparent", background: "transparent" }
+          }
+          onMouseEnter={(e) => {
+            if (!completed) e.currentTarget.style.borderColor = dot;
+          }}
+          onMouseLeave={(e) => {
+            if (!completed) e.currentTarget.style.borderColor = "var(--color-border)";
+          }}
         >
-          <Check className="h-3 w-3" strokeWidth={3} />
+          <Check className="h-2.5 w-2.5" strokeWidth={3} />
         </button>
 
-        <span className="w-6 shrink-0 text-xs tabular-nums text-muted-foreground">
+        {/* Index number */}
+        <span
+          className="w-6 shrink-0 text-xs font-mono tabular-nums font-semibold"
+          style={{ color: dot + "cc" }}
+        >
           {String(index).padStart(2, "0")}
         </span>
 
+        {/* Question name */}
         <Link
           to={`/question/${question.id}`}
-          className={`min-w-0 flex-1 truncate text-sm transition-colors hover:text-foreground ${
-            completed ? "text-muted-foreground" : "text-foreground"
+          className={`min-w-0 flex-1 truncate text-sm transition-colors hover:underline underline-offset-2 ${
+            completed ? "text-muted-foreground line-through decoration-1" : "text-foreground font-medium"
           }`}
+          style={completed ? { textDecorationColor: dot + "60" } : {}}
         >
           {question.name}
         </Link>
 
-        <div className="flex shrink-0 items-center gap-0.5">
+        {/* Action links */}
+        <div className="flex shrink-0 items-center gap-1">
           {question.item_type === "theory" ? (
-            <Link to={`/question/${question.id}`} className={linkClass}>
+            <Link
+              to={`/question/${question.id}`}
+              className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition-all duration-150 hover:-translate-y-px"
+              style={{
+                background: "oklch(0.92 0.06 225)",
+                color: "oklch(0.42 0.18 225)",
+                border: "1px solid oklch(0.78 0.12 225)",
+              }}
+            >
+              <BookOpen className="h-2.5 w-2.5" />
               Read
             </Link>
           ) : (
@@ -53,9 +81,15 @@ export function QuestionRow({ question, index, completed, onToggle }) {
                   href={question.problem_url}
                   target="_blank"
                   rel="noreferrer"
-                  className={linkClass}
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition-all duration-150 hover:-translate-y-px"
+                  style={{
+                    background: "oklch(0.93 0.06 290)",
+                    color: "oklch(0.42 0.18 290)",
+                    border: "1px solid oklch(0.80 0.12 290)",
+                  }}
                 >
-                  Problem
+                  <ExternalLink className="h-2.5 w-2.5" />
+                  Solve
                 </a>
               )}
               {question.github_url && (
@@ -63,8 +97,14 @@ export function QuestionRow({ question, index, completed, onToggle }) {
                   href={question.github_url}
                   target="_blank"
                   rel="noreferrer"
-                  className={linkClass}
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition-all duration-150 hover:-translate-y-px"
+                  style={{
+                    background: "oklch(0.93 0.06 330)",
+                    color: "oklch(0.44 0.18 330)",
+                    border: "1px solid oklch(0.79 0.12 330)",
+                  }}
                 >
+                  <Github className="h-2.5 w-2.5" />
                   Code
                 </a>
               )}
@@ -73,8 +113,14 @@ export function QuestionRow({ question, index, completed, onToggle }) {
                   href={question.resource_url}
                   target="_blank"
                   rel="noreferrer"
-                  className={linkClass}
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition-all duration-150 hover:-translate-y-px"
+                  style={{
+                    background: "oklch(0.92 0.06 225)",
+                    color: "oklch(0.42 0.18 225)",
+                    border: "1px solid oklch(0.78 0.12 225)",
+                  }}
                 >
+                  <BookOpen className="h-2.5 w-2.5" />
                   Read
                 </a>
               )}
@@ -82,9 +128,26 @@ export function QuestionRow({ question, index, completed, onToggle }) {
                 <button
                   type="button"
                   onClick={() => setShowVideo((v) => !v)}
-                  className={`${linkClass} ${showVideo ? "bg-hover text-foreground" : ""}`}
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition-all duration-150 hover:-translate-y-px"
+                  style={
+                    showVideo
+                      ? {
+                          background: "oklch(0.56 0.20 25)",
+                          color: "white",
+                          border: "1px solid oklch(0.56 0.20 25)",
+                        }
+                      : {
+                          background: "oklch(0.94 0.06 25)",
+                          color: "oklch(0.44 0.18 25)",
+                          border: "1px solid oklch(0.80 0.12 25)",
+                        }
+                  }
                 >
-                  {showVideo ? "Close" : "Watch"}
+                  {showVideo ? (
+                    <><X className="h-2.5 w-2.5" />Close</>
+                  ) : (
+                    <><Play className="h-2.5 w-2.5" />Watch</>
+                  )}
                 </button>
               )}
             </>
@@ -93,10 +156,11 @@ export function QuestionRow({ question, index, completed, onToggle }) {
       </div>
 
       {showVideo && videoId && (
-        <div className="px-3 pb-4 sm:px-4">
+        <div className="px-4 pb-4 sm:px-5">
           <YouTubePlayer videoId={videoId} title={question.name} />
         </div>
       )}
     </div>
   );
 }
+
